@@ -7,8 +7,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'scripts/**'
-      - '.github/workflows/profile.yml'
+      - '.github/**'
 
 permissions:
   contents: write
@@ -18,29 +17,25 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  cards:
+  contrib:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Build cards
-        run: node scripts/build.mjs
+      - uses: yoshi389111/github-profile-3d-contrib@v0.9.3
         env:
-          GH_TOKEN: ${{ secrets.METRICS_TOKEN || secrets.GITHUB_TOKEN }}
-          PROFILE_LOGIN: ${{ github.repository_owner }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          USERNAME: ${{ github.repository_owner }}
+          SETTING_JSON: .github/3d-contrib.json
 
       - name: Commit changes
         run: |
-          git add assets data
+          git add profile-3d-contrib
           if git diff --cached --quiet; then
-            echo "cards unchanged"
+            echo "graph unchanged"
             exit 0
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'chore: refresh profile cards'
+          git commit -m 'chore: refresh contribution graph'
           git push
