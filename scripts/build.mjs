@@ -13,28 +13,28 @@ const MONO = "'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo
 
 const THEMES = {
   dark: {
-    bg: '#0b0d10',
-    panel: '#11151a',
-    border: '#22272e',
-    text: '#e8eaed',
-    muted: '#8b929b',
-    faint: '#3a4048',
-    grid: '#2a3038',
-    accent: '#d2ff4d',
-    accentSoft: '#d2ff4d',
-    signal: '#ff5d4d',
+    bg: '#070b14',
+    panel: '#0c1220',
+    border: '#1a2438',
+    text: '#e7ecf6',
+    muted: '#8593ad',
+    faint: '#344058',
+    grid: '#1d2a44',
+    accent: '#4d7cff',
+    accentSoft: '#2f5fe0',
+    signal: '#9db8ff',
   },
   light: {
     bg: '#ffffff',
-    panel: '#f6f7f8',
-    border: '#d8dde3',
-    text: '#0f1215',
-    muted: '#5b636c',
-    faint: '#b9c0c7',
-    grid: '#d3d8de',
-    accent: '#4f6f00',
-    accentSoft: '#7fa300',
-    signal: '#d63a2b',
+    panel: '#f5f7fb',
+    border: '#d6dce8',
+    text: '#0b1220',
+    muted: '#536079',
+    faint: '#b2bccd',
+    grid: '#d9e0ec',
+    accent: '#0047ab',
+    accentSoft: '#2f5fd0',
+    signal: '#0047ab',
   },
 };
 
@@ -96,75 +96,46 @@ function typingTimeline(phrases, { slot = 4.2, type = 0.055, erase = 0.022, hold
 function header(t) {
   const W = 1200;
   const H = 340;
-  const HZ = 176;
-  const VX = 940;
-  const rand = rng(1985);
+  const RX = 930;
+  const RY = 170;
+  const R = 128;
+  const SWEEP = 6;
+  const rand = rng(7);
 
-  const verticals = [];
-  for (let k = -14; k <= 14; k++) {
-    const bx = VX + k * 96;
-    verticals.push(`<line x1="${VX}" y1="${HZ}" x2="${bx}" y2="${H + 40}"/>`);
-  }
-
-  const period = 5.2;
-  const lines = 9;
-  const steps = 28;
-  const ys = [];
-  const ops = [];
-  for (let i = 0; i <= steps; i++) {
-    const p = i / steps;
-    const z = 14 - 13 * p;
-    ys.push(r(HZ + (H - HZ + 60) / z));
-    ops.push(r(Math.min(1, p * 2.4), 3));
-  }
-  const horizontals = [];
-  for (let i = 0; i < lines; i++) {
-    const begin = r((-i * period) / lines, 3);
-    horizontals.push(`<line x1="${VX - 900}" x2="${VX + 900}" y1="${HZ}" y2="${HZ}">
-<animate attributeName="y1" values="${ys.join(';')}" dur="${period}s" begin="${begin}s" repeatCount="indefinite"/>
-<animate attributeName="y2" values="${ys.join(';')}" dur="${period}s" begin="${begin}s" repeatCount="indefinite"/>
-<animate attributeName="stroke-opacity" values="${ops.join(';')}" dur="${period}s" begin="${begin}s" repeatCount="indefinite"/>
-</line>`);
-  }
-
-  const buildings = [];
-  const windows = [];
-  let x = 660;
-  while (x < 1190) {
-    const near = 1 - Math.min(1, Math.abs(x - VX) / 320);
-    const bw = 14 + Math.floor(rand() * 26);
-    const bh = 12 + Math.floor(rand() * (28 + near * 64));
-    buildings.push({ x, w: bw, h: bh });
-    x += bw + (rand() < 0.25 ? 2 + Math.floor(rand() * 4) : 0);
-  }
-  const tower = { x: VX - 10, w: 22, h: 132 };
-  buildings.push(tower);
-
-  const shapes = buildings
-    .map((b) => `<rect x="${b.x}" y="${HZ - b.h}" width="${b.w}" height="${b.h}"/>`)
+  const rings = [0.34, 0.67, 1]
+    .map((f) => `<circle cx="${RX}" cy="${RY}" r="${r(R * f)}" stroke="${t.grid}" ${f < 1 ? 'stroke-dasharray="2 4"' : ''}/>`)
     .join('');
 
-  for (const b of buildings) {
-    const cols = Math.max(1, Math.floor((b.w - 4) / 5));
-    const rows = Math.max(1, Math.floor((b.h - 6) / 7));
-    for (let cx = 0; cx < cols; cx++) {
-      for (let cy = 0; cy < rows; cy++) {
-        if (rand() > 0.12) continue;
-        const wx = b.x + 3 + cx * 5;
-        const wy = HZ - b.h + 5 + cy * 7;
-        if (rand() < 0.22) {
-          const dur = r(3 + rand() * 6, 2);
-          const begin = r(rand() * 6, 2);
-          windows.push(`<rect x="${wx}" y="${wy}" width="2" height="3" fill="${t.accent}"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.7;1" dur="${dur}s" begin="${begin}s" repeatCount="indefinite"/></rect>`);
-        } else {
-          windows.push(`<rect x="${wx}" y="${wy}" width="2" height="3" fill="${t.muted}" opacity="0.55"/>`);
-        }
-      }
-    }
+  const ticks = [];
+  for (let a = 0; a < 360; a += 5) {
+    const rad = ((a - 90) * Math.PI) / 180;
+    const len = a % 90 === 0 ? 10 : a % 30 === 0 ? 6 : 3;
+    const r1 = R + 6;
+    const r2 = r1 + len;
+    ticks.push(`<line x1="${r(RX + Math.cos(rad) * r1)}" y1="${r(RY + Math.sin(rad) * r1)}" x2="${r(RX + Math.cos(rad) * r2)}" y2="${r(RY + Math.sin(rad) * r2)}" stroke="${a % 90 === 0 ? t.muted : t.faint}"/>`);
   }
 
-  const antenna = `<line x1="${tower.x + tower.w / 2}" y1="${HZ - tower.h}" x2="${tower.x + tower.w / 2}" y2="${HZ - tower.h - 22}" stroke="${t.muted}"/>
-<circle cx="${tower.x + tower.w / 2}" cy="${HZ - tower.h - 23}" r="2.2" fill="${t.signal}"><animate attributeName="opacity" values="1;0.15;1" dur="2.4s" repeatCount="indefinite"/></circle>`;
+  const wedge = (deg) => {
+    const a0 = (-90 * Math.PI) / 180;
+    const a1 = ((-90 - deg) * Math.PI) / 180;
+    return `M${RX},${RY} L${r(RX + Math.cos(a0) * R)},${r(RY + Math.sin(a0) * R)} A${R},${R} 0 0 0 ${r(RX + Math.cos(a1) * R)},${r(RY + Math.sin(a1) * R)} Z`;
+  };
+  const trail = [52, 34, 18, 8].map((d, i) => `<path d="${wedge(d)}" fill="${t.accent}" fill-opacity="${[0.05, 0.06, 0.08, 0.12][i]}"/>`).join('');
+
+  const blips = [];
+  for (let i = 0; i < 9; i++) {
+    const ang = rand() * 360;
+    const dist = R * (0.18 + rand() * 0.75);
+    const rad = ((ang - 90) * Math.PI) / 180;
+    const bx = r(RX + Math.cos(rad) * dist);
+    const by = r(RY + Math.sin(rad) * dist);
+    const begin = r((ang / 360) * SWEEP - SWEEP, 3);
+    const size = i % 3 === 0 ? 3 : 2;
+    blips.push(`<circle cx="${bx}" cy="${by}" r="${size}" fill="${t.signal}" opacity="0.9"><animate attributeName="opacity" values="1;0.12;0.12" keyTimes="0;0.85;1" dur="${SWEEP}s" begin="${begin}s" repeatCount="indefinite"/></circle>`);
+    if (i % 3 === 0) {
+      blips.push(`<circle cx="${bx}" cy="${by}" r="${size}" stroke="${t.signal}" fill="none" opacity="0"><animate attributeName="r" values="${size};14;14" keyTimes="0;0.25;1" dur="${SWEEP}s" begin="${begin}s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.7;0;0" keyTimes="0;0.25;1" dur="${SWEEP}s" begin="${begin}s" repeatCount="indefinite"/></circle>`);
+    }
+  }
 
   const phrases = [
     'lua · typescript · react',
@@ -194,34 +165,35 @@ function header(t) {
   const defs = `<pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="${t.grid}"/></pattern>
 <radialGradient id="dotfade" cx="0.22" cy="0.35" r="0.75"><stop offset="0" stop-color="#fff" stop-opacity="0.9"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
 <mask id="dotmask"><rect width="${W}" height="${H}" fill="url(#dotfade)"/></mask>
-<linearGradient id="hfade" x1="560" x2="900" y1="0" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff"/></linearGradient>
-<mask id="sidemask"><rect width="${W}" height="${H}" fill="url(#hfade)"/></mask>
-<linearGradient id="vfade" x1="0" x2="0" y1="${HZ}" y2="${H}" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity="0.05"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.8"/><stop offset="1" stop-color="#fff"/></linearGradient>
-<mask id="floormask"><rect y="${HZ}" width="${W}" height="${H - HZ}" fill="url(#vfade)"/></mask>
-<linearGradient id="glow" x1="0" x2="0" y1="${HZ - 40}" y2="${HZ + 30}" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="${t.accent}" stop-opacity="0"/><stop offset="0.57" stop-color="${t.accent}" stop-opacity="0.10"/><stop offset="1" stop-color="${t.accent}" stop-opacity="0"/></linearGradient>`;
+<radialGradient id="halo" cx="${RX}" cy="${RY}" r="${R + 60}" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="${t.accent}" stop-opacity="0.10"/><stop offset="1" stop-color="${t.accent}" stop-opacity="0"/></radialGradient>
+<clipPath id="scope"><circle cx="${RX}" cy="${RY}" r="${R}"/></clipPath>`;
 
   const body = `<rect width="${W}" height="${H}" fill="url(#dots)" mask="url(#dotmask)" opacity="0.7"/>
-<g mask="url(#sidemask)">
-<rect x="560" y="${HZ - 40}" width="${W - 560}" height="70" fill="url(#glow)"/>
-<g mask="url(#floormask)" stroke="${t.grid}" stroke-width="1">${verticals.join('')}</g>
-<g mask="url(#floormask)" stroke="${t.accentSoft}" stroke-width="1" stroke-opacity="0">${horizontals.join('')}</g>
-<g fill="${t.bg}" stroke="${t.faint}" stroke-width="1">${shapes}</g>
-${windows.join('')}
-${antenna}
-<line x1="560" y1="${HZ}" x2="${W}" y2="${HZ}" stroke="${t.muted}" stroke-opacity="0.7"/>
+<circle cx="${RX}" cy="${RY}" r="${R + 60}" fill="url(#halo)"/>
+<g>${rings}</g>
+<line x1="${RX - R}" y1="${RY}" x2="${RX + R}" y2="${RY}" stroke="${t.grid}"/>
+<line x1="${RX}" y1="${RY - R}" x2="${RX}" y2="${RY + R}" stroke="${t.grid}"/>
+<g>${ticks.join('')}</g>
+<g clip-path="url(#scope)">
+<g>
+<animateTransform attributeName="transform" type="rotate" from="0 ${RX} ${RY}" to="360 ${RX} ${RY}" dur="${SWEEP}s" repeatCount="indefinite"/>
+${trail}
+<line x1="${RX}" y1="${RY}" x2="${RX}" y2="${RY - R}" stroke="${t.accent}" stroke-width="1.5"/>
 </g>
+${blips.join('')}
+</g>
+<circle cx="${RX}" cy="${RY}" r="3" fill="${t.accent}"/>
+<text x="${RX}" y="${RY - R - 24}" text-anchor="middle" class="mono" font-size="11" fill="${t.muted}">N</text>
 <g>
 <animate attributeName="opacity" from="0" to="1" dur="0.9s" begin="0.1s" fill="freeze"/>
 <animateTransform attributeName="transform" type="translate" from="0 8" to="0 0" dur="0.9s" begin="0.1s" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.2 0.8 0.2 1"/>
-<text x="64" y="74" class="mono" font-size="13" letter-spacing="1.4" fill="${t.muted}">0CULARSWIFTT <tspan fill="${t.faint}">/</tspan> CREATIVE STORE</text>
+<text x="64" y="74" class="mono" font-size="13" letter-spacing="1.4" fill="${t.muted}">@0CULARSWIFTT</text>
 <text x="60" y="176" class="sans" font-size="96" font-weight="700" letter-spacing="-4" fill="${t.text}"><tspan fill="${t.accent}">0</tspan>cular</text>
 <text x="64" y="220" class="sans" font-size="21" fill="${t.muted}">Gameplay systems &amp; interface engineering for FiveM.</text>
 </g>
 <polyline points="66,268 76,275 66,282" stroke="${t.accent}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
 ${typed}
-${cursor}
-<text x="${W - 40}" y="48" text-anchor="end" class="mono" font-size="12" fill="${t.faint}">vec3(-75.0, -818.0, 326.2)</text>
-<text x="${W - 40}" y="${H - 28}" text-anchor="end" class="mono" font-size="12" fill="${t.faint}">oslo · los santos</text>`;
+${cursor}`;
 
   return frame(W, H, t, body, defs);
 }
@@ -321,7 +293,7 @@ function activity(t, mtx) {
     ['CONTRIBUTIONS', mtx.total.toLocaleString('en-US'), 'rolling 52 weeks'],
     ['CURRENT STREAK', `${mtx.current}d`, mtx.current ? 'still going' : 'resets daily'],
     ['LONGEST STREAK', `${mtx.longest}d`, 'consecutive days'],
-    ['PEAK DAY', String(mtx.best.count), mtx.best.date ? new Date(`${mtx.best.date}T00:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }) : '—'],
+    ['PEAK DAY', String(mtx.best.count), 'in a single day'],
   ]
     .map(([k, v, s], i) => {
       const x = 64 + (i % 2) * 150;
@@ -392,7 +364,7 @@ async function gql(query, variables) {
 const QUERY = `query($login:String!){
   user(login:$login){
     contributionsCollection{ contributionCalendar{ totalContributions weeks{ firstDay contributionDays{ date contributionCount } } } }
-    repositories(first:100, ownerAffiliations:OWNER, isFork:false){ nodes{ languages(first:20, orderBy:{field:SIZE, direction:DESC}){ edges{ size node{ name } } } } }
+    repositories(first:100, ownerAffiliations:OWNER, isFork:false){ nodes{ name languages(first:20, orderBy:{field:SIZE, direction:DESC}){ edges{ size node{ name } } } } }
   }
 }`;
 
@@ -416,15 +388,15 @@ function summarize(user, cached) {
   for (; i >= 0 && days[i].contributionCount > 0; i--) current++;
 
   const bytes = new Map();
-  for (const repo of user.repositories.nodes) {
+  for (const repo of user.repositories.nodes.filter((n) => n.name.toLowerCase() !== LOGIN.toLowerCase())) {
     for (const e of repo.languages.edges) bytes.set(e.node.name, (bytes.get(e.node.name) || 0) + e.size);
   }
   let languages = [...bytes].map(([name, b]) => ({ name, bytes: b })).sort((a, b) => b.bytes - a.bytes);
   const fresh = languages.reduce((a, l) => a + l.bytes, 0);
   const prior = (cached?.languages || []).reduce((a, l) => a + l.bytes, 0);
-  if (fresh === 0 || fresh < prior * 0.5) languages = cached?.languages || languages;
+  if (fresh === 0) languages = cached?.languages || languages;
 
-  return { total: cal.totalContributions, weeks, weekStarts, current, longest, best, languages };
+  return { total: cal.totalContributions, weeks, weekStarts, current, longest, best: { count: best.count }, languages };
 }
 
 async function main() {

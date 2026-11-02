@@ -27,16 +27,16 @@
     4,
     3,
     5,
-    3,
-    3,
+    2,
+    4,
     2,
     1,
     2,
     4,
     3,
     9,
-    4,
-    0,
+    3,
+    1,
     0,
     5,
     7,
@@ -111,31 +111,38 @@
     "2026-11-01"
   ],
   "current": 1,
-  "longest": 8,
+  "longest": 6,
   "best": {
-    "date": "2026-10-21",
     "count": 16
   },
   "languages": [
     {
-      "name": "JavaScript",
-      "bytes": 21066
+      "name": "TypeScript",
+      "bytes": 1797122
     },
     {
       "name": "Lua",
-      "bytes": 7126
-    },
-    {
-      "name": "TypeScript",
-      "bytes": 4118
+      "bytes": 548084
     },
     {
       "name": "CSS",
-      "bytes": 3959
+      "bytes": 186323
+    },
+    {
+      "name": "JavaScript",
+      "bytes": 173362
     },
     {
       "name": "HTML",
-      "bytes": 1279
+      "bytes": 126021
+    },
+    {
+      "name": "MDX",
+      "bytes": 43404
+    },
+    {
+      "name": "SCSS",
+      "bytes": 18400
     }
   ]
 }
