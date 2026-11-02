@@ -1,9 +1,20 @@
 ### Ocular
 
-FiveM resource development &middot; Lua &middot; TypeScript &middot; React
+FiveM resource developer. I build the gameplay systems that run on the server in Lua, and the in-game interfaces on top of them in React and TypeScript.
 
-**[fxaudit](https://github.com/0cularswiftt/fxaudit)**: security scanner for FiveM resources. Finds backdoors, exploitable net events and SQL injection, with SARIF output and a GitHub Action.<br>
-**[fxkit](https://github.com/0cularswiftt/fxkit)**: lean, tested utility modules for FiveM, with rate-limited and schema-validated net events and callbacks.
+I care about code that holds up on a live server: the server decides, the client only asks, and every interface feels built for the game rather than dropped into it.
+
+**What I work on**
+
+- Server-authoritative gameplay systems for Qbox, QBCore and ESX, behind one framework bridge
+- NUI interfaces with React, Vite, Tailwind and Mantine, tuned for FiveM's CEF
+- Tooling for security and code quality in FiveM resources
+
+**Stack**
+
+<img src="https://skillicons.dev/icons?i=lua,ts,js,react,vite,tailwind,nodejs,mysql,py,git&perline=10" alt="Lua, TypeScript, JavaScript, React, Vite, Tailwind CSS, Node.js, MySQL, Python, Git">
+
+<br>
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="./profile-3d-contrib/cobalt-dark.svg">
